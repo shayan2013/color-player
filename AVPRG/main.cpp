@@ -19,7 +19,7 @@ const string Red = "Thresholded ImageRed";
 const string Camera = "Original";
 
 
-
+//Remove Noise from Image
 void removeAndFill (Mat &thresh) {
 		//remove small objects from the foreground
 		erode(thresh, thresh, getStructuringElement(MORPH_ELLIPSE, Size(5, 5)));
@@ -33,41 +33,41 @@ void removeAndFill (Mat &thresh) {
 int main()
 {
 
-	cout << "Wähle ein Sound-Thema an!" << endl;
-	cout << "Tiere = 1, Gitarre = 2, Gitarre2 = 3, R\201lpser = 4, Hupe = 5, Funny = 6" << endl;
+	cout << "Wähle ein Soundthema aus!" << endl;
+	cout << "Tiere = 1 | Gitarre = 2 | Gitarre2 = 3, R\201lpser = 4 | Hupe = 5 | Funny = 6" << endl;
 	string input = "";
 	int number = 0;
 
 	do {
-		cout << "bitte gib nur eine Zahl und keinen Name an!" << endl;
+		cout << "Bitte gib die Nummer des gewählten Themas an:" << endl;
 		getline(cin, input);
 		stringstream myStream(input);
 		myStream >> number;
 	} while ((number < 1) || (number > 6));
 	int tone = -1;
 
+	//capture the video from web cam
+	VideoCapture cap(0); 
 
-	VideoCapture cap(0); //capture the video from web cam
-
-	if (!cap.isOpened())  // if not success, exit program
+	// if not success, exit program
+	if (!cap.isOpened())  
 	{
 		cout << "Cannot open the web cam" << endl;
 		return -1;
 	}
 
-
 	int x = 0;
-
-	
 
 	while (true)
 	{cout << "es gehts weiter while" << endl;
 		Mat imgOriginal, imgHSV;
 		Mat thresholdR, thresholdB, thresholdG, thresholdY;
-		Mat HSV;
-		bool bSuccess = cap.read(imgOriginal); // read a new frame from video
 
-		if (!bSuccess) //if not success, break loop
+		// read a new frame from video
+		bool bSuccess = cap.read(imgOriginal); 
+
+		//if not success, break loop
+		if (!bSuccess) 
 		{
 			cout << "Cannot read a frame from video stream" << endl;
 			break;
@@ -105,7 +105,7 @@ int main()
 		Moments oMoments = moments(thresholdR);
 		double dArea = oMoments.m00;
 
-		// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero 
+		// if the darea <= 10000, consider that there are no object in the image and it's because of the noise, the area is not zero 
 		if (dArea > 1000000)
 		{
 			number = 0;
@@ -117,7 +117,6 @@ int main()
 		Moments oMomentsB = moments(thresholdB);
 		double dAreaB = oMomentsB.m00;
 
-		// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero 
 		if (dAreaB > 1000000)
 		{
 			tone= 1;
@@ -129,7 +128,6 @@ int main()
 		Moments oMomentsG = moments(thresholdG);
 		double dAreaG = oMomentsG.m00;
 
-		// if the area <= 10000, I consider that the there are no object in the image and it's because of the noise, the area is not zero 
 		if (dAreaG > 1000000)
 		{
 			tone = 2;
@@ -137,11 +135,9 @@ int main()
 			t3.join();
 		}
 
-		//Tones for Yellow
 		Moments oMomentsY = moments(thresholdY);
 		double dAreaY = oMomentsY.m00;
 
-		// if the area <= 1000000, I consider that the there are no object in the image and it's because of the noise, the area is not zero 
 		if (dAreaY > 1000000)
 		{
 			tone = 3;
@@ -151,15 +147,15 @@ int main()
 
 
 
+		//Show Windows
+		//imshow(Yellow, tresholdY); 
+		//imshow(Green, thresholdG);
+		//imshow(Blue, thresholdB);
+		//imshow(Red, thresholdR); 
+		imshow(Camera, imgOriginal); 
 
-		//imshow(Yellow, tresholdY); //show the thresholded image
-		//imshow(Green, thresholdG); //show the thresholded image
-		//imshow(Blue, thresholdB); //show the thresholded image
-		//imshow(Red, thresholdR); //show the thresholded image
-		imshow(Camera, imgOriginal); //show the original image
-
-
-		if (waitKey(30) == 27) //wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		//wait for 'esc' key press for 30ms. If 'esc' key is pressed, break loop
+		if (waitKey(30) == 27) 
 		{
 			cout << "esc key is pressed by user" << endl;
 			break;
